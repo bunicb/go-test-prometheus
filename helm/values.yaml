@@ -1,0 +1,62 @@
+replicaCount: 1
+
+image:
+  # IMPORTANT: Replace this with the actual name of your built Docker image.
+  # For example: your-docker-registry/prometheus-test-app:latest
+  repository: ghcr.io/bunicb/go-test-prometheus
+  pullPolicy: IfNotPresent
+  # The tag of the image to deploy.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created.
+  create: true
+  # Annotations to add to the service account.
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template.
+  name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Annotations for the Service to enable Prometheus scraping.
+# If you are using the Prometheus Operator, these annotations will
+# tell it to automatically discover and scrape this service.
+prometheus:
+  enabled: true
+  scrape: true
+  path: /metrics
+  port: "8080" # The port name must match the one in the service spec.
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+

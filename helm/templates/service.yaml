@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "go-prometheus-test.fullname" . }}
+  labels:
+    {{- include "go-prometheus-test.labels" . | nindent 4 }}
+  {{- if .Values.prometheus.enabled }}
+  annotations:
+    prometheus.io/scrape: "{{ .Values.prometheus.scrape }}"
+    prometheus.io/path: "{{ .Values.prometheus.path }}"
+    prometheus.io/port: "{{ .Values.prometheus.port }}"
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8080 # Exposing the metrics port directly
+      targetPort: 8080
+      protocol: TCP
+      name: metrics # The port name matches prometheus.port value
+  selector:
+    {{- include "go-prometheus-test.selectorLabels" . | nindent 4 }}
+
